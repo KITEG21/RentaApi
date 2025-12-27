@@ -9,8 +9,8 @@ public class YachtCalendar: Entity
 {
     public Guid YachtId { get; set; }
     public DateTime Date { get; set; }
-    public TimeSpan StartTime { get; set; }
-    public TimeSpan EndTime { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
     public CalendarStatus Status { get; set; } = CalendarStatus.Available;
     public Yacht Yacht { get; set; } = null!;
 }
