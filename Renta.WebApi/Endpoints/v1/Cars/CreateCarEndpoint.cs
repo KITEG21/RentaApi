@@ -10,13 +10,13 @@ public class CreateCarEndpoint : CoreEndpoint<CreateCarCommand, CreateCarRespons
     public override void Configure()
     {
         Post("/car");
-        AllowAnonymous();
         Description(b => b
             .WithTags(RouteGroup.Cars)
             .WithSummary("Creates a new car")
             .WithDescription("Creates a new car with the provided details.")
         );
         base.Configure();
+        Roles("Admin");
     }
 
     public override async Task HandleAsync(CreateCarCommand req, CancellationToken ct)

@@ -10,7 +10,7 @@ public class PatchEventStatusEndpoint : CoreEndpoint<PatchEventStatusCommand, Pa
     public override void Configure()
     {
         Patch("/event/{Id}/status");
-        AllowAnonymous();
+        Roles("Admin");
         Description(b => b
             .WithTags(RouteGroup.Events)
             .WithSummary("Updates event status")

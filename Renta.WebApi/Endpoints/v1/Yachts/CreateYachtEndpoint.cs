@@ -10,7 +10,7 @@ public class CreateYachtEndpoint : CoreEndpoint<CreateYachtCommand, CreateYachtR
     public override void Configure()
     {
         Post("/yacht");
-        AllowAnonymous();
+        Roles("Admin");
         Description(b => b
             .WithTags(RouteGroup.Yachts)
             .WithSummary("Creates a new yacht")

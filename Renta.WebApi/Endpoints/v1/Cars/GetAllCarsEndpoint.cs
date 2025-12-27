@@ -13,6 +13,7 @@ public class GetAllCarsEndpoint : CoreEndpoint<QueryRequest, PagedResponse<GetAl
     public override void Configure()
     {
         Get("/car");
+        AllowAnonymous();
         Description(b => b
             .WithTags(RouteGroup.Cars)
             .WithSummary("Retrieves all cars")

@@ -10,13 +10,13 @@ public class PatchCarStatusEndpoint : CoreEndpoint<PatchCarStatusCommand, PatchC
     public override void Configure()
     {
         Patch("/car/{Id}/status");
-        AllowAnonymous();
         Description(b => b
             .WithTags(RouteGroup.Cars)
             .WithSummary("Updates car status")
             .WithDescription("Updates the status of a car (Available, Reserved, or Sold).")
         );
         base.Configure();
+        Roles("Admin");
     }
 
     public override async Task HandleAsync(PatchCarStatusCommand req, CancellationToken ct)

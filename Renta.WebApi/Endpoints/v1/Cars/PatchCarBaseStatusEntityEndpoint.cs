@@ -10,13 +10,13 @@ public class PatchCarBaseStatusEntityEndpoint : CoreEndpoint<PatchCarBaseStatusE
     public override void Configure()
     {
         Patch("/car/{Id}/base-status");
-        AllowAnonymous();
         Description(b => b
             .WithTags(RouteGroup.Cars)
             .WithSummary("Updates car base status entity")
             .WithDescription("Updates the base status entity of a car (Active, Inactive, InEdition, or Deleted).")
         );
         base.Configure();
+        Roles("Admin");
     }
 
     public override async Task HandleAsync(PatchCarBaseStatusEntityCommand req, CancellationToken ct)

@@ -10,7 +10,7 @@ public class PatchEventBaseStatusEntityEndpoint : CoreEndpoint<PatchEventBaseSta
     public override void Configure()
     {
         Patch("/event/{Id}/base-status");
-        AllowAnonymous();
+        Roles("Admin");
         Description(b => b
             .WithTags(RouteGroup.Events)
             .WithSummary("Updates event base status entity")

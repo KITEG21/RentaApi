@@ -10,13 +10,13 @@ public class UpdateCarEndpoint : CoreEndpoint<UpdateCarCommand, UpdateCarRespons
     public override void Configure()
     {
         Put("/car/{Id}");
-        AllowAnonymous();
         Description(b => b
             .WithTags(RouteGroup.Cars)
             .WithSummary("Updates an existing car")
             .WithDescription("Updates an existing car with the provided details.")
         );
         base.Configure();
+        Roles("Admin");
     }
 
     public override async Task HandleAsync(UpdateCarCommand req, CancellationToken ct)

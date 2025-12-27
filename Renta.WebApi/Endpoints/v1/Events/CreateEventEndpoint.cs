@@ -10,13 +10,13 @@ public class CreateEventEndpoint : CoreEndpoint<CreateEventCommand, CreateEventR
     public override void Configure()
     {
         Post("/event");
-        AllowAnonymous();
         Description(b => b
             .WithTags(RouteGroup.Events)
             .WithSummary("Creates a new event")
             .WithDescription("Creates a new event with the provided details.")
         );
         base.Configure();
+        Roles("Admin");
     }
 
     public override async Task HandleAsync(CreateEventCommand req, CancellationToken ct)

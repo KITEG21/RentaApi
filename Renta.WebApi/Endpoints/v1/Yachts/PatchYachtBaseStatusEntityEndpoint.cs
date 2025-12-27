@@ -10,7 +10,7 @@ public class PatchYachtBaseStatusEntityEndpoint : CoreEndpoint<PatchYachtBaseSta
     public override void Configure()
     {
         Patch("/yacht/{Id}/base-status");
-        AllowAnonymous();
+        Roles("Admin");
         Description(b => b
             .WithTags(RouteGroup.Yachts)
             .WithSummary("Updates yacht base status entity")

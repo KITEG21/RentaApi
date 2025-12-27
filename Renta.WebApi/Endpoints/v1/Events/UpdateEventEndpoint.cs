@@ -10,7 +10,7 @@ public class UpdateEventEndpoint : CoreEndpoint<UpdateEventCommand, UpdateEventR
     public override void Configure()
     {
         Put("/event/{Id}");
-        AllowAnonymous();
+        Roles("Admin"); 
         Description(b => b
             .WithTags(RouteGroup.Events)
             .WithSummary("Updates an existing event")

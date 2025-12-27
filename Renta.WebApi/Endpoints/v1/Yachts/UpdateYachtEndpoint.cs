@@ -10,7 +10,7 @@ public class UpdateYachtEndpoint : CoreEndpoint<UpdateYachtCommand, UpdateYachtR
     public override void Configure()
     {
         Put("/yacht/{Id}");
-        AllowAnonymous();
+        Roles("Admin");
         Description(b => b
             .WithTags(RouteGroup.Yachts)
             .WithSummary("Updates an existing yacht")
