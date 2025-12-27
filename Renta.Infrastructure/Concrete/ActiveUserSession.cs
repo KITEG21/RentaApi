@@ -24,5 +24,5 @@ public class ActiveUserSession : IActiveUserSession
 
     public IEnumerable<string> GetUserRoles() => _user?.ClaimRoles() ?? Enumerable.Empty<string>();
 
-
+    public ClaimsPrincipal? GetCurrentUserPrincipal() => _user;
 }

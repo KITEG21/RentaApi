@@ -9,5 +9,6 @@ public static class RouteGroup
     public static readonly string Cars = "Cars";
     public static readonly string Yachts = "Yachts";
     public static readonly string Events = "Events";
+    public static readonly string Auth = "Auth";
 }
 

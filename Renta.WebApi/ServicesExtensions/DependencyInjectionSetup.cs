@@ -1,11 +1,13 @@
 using System;
 using Renta.Application.Interfaces;
+using Renta.Application.Settings;
 using Renta.Domain.Interfaces.Repositories;
 using Renta.Domain.Interfaces.Services;
 using Renta.Domain.Settings;
 using Renta.Infrastructure.Concrete;
 using Renta.Infrastructure.Persistence.Repositories;
 using Renta.Infrastructure.Services;
+using Renta.Infrastructure.Services.Auth;
 using Microsoft.Extensions.Options;
 
 namespace Renta.WebApi.ServicesExtensions;
@@ -27,9 +29,11 @@ public static class DependencyInjectionSetup
         
         services.AddHttpClient();
 
-
+        // JWT Service
+        services.AddScoped<IJwtService, JwtService>();
 
         services.Configure<ThrottleSettings>(configuration.GetSection("Throttle"));
+        services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         return services;
     }
 }

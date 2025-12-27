@@ -1,12 +1,20 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Renta.Infrastructure.Persistence.Context;
 using Renta.WebApi;
 using Renta.WebApi.ServicesExtensions;
 using Scalar.AspNetCore;
 
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthorization();
+builder.Services
+  .AddIdentitySetup()
+  .AddJwtAuthenticationSetup(builder.Configuration)
+  .AddAuthorization();
 
 builder.Services
   .AddEndpointsApiExplorer()
@@ -14,9 +22,8 @@ builder.Services
   .AddWriteDbContextSetup(builder.Configuration)
   .AddReadDbContextSetup(builder.Configuration)
   .AddFastEndpointSetup()
-  .AddSwaggerSetup()
-  .AddOpenApi();
-  // Remove .AddDbContextExtension and the manual AddDbContext calls
+  .AddOpenApiSetup();
+
 
 var app = builder.Build();
 
@@ -28,11 +35,11 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-//app.UseAuthentication();
+app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseFastEndpointsSetup()
-  .UseHttpsRedirection();
+app.UseFastEndpointsSetup();
 
 app.Services.ApplyMigrationsExtension();
 
