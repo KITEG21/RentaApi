@@ -10,9 +10,7 @@ public class User : IdentityUser<Guid>, IEntity
     public DateTime? LastModified { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public string Address { get; set; } = string.Empty;
     public bool IsLock { get; set; } = false;
-
-    //TODO check this props
     public StatusEntityType StatusBaseEntity { get; set ; }
+    public UserType UserType { get; set; }
 }
