@@ -38,12 +38,15 @@ public class LoginCommandHandler : CoreCommandHandler<LoginCommand, LoginRespons
         if (!await _userManager.CheckPasswordAsync(user, command.Password))
             ThrowError("Invalid credentials", 401);
 
+        // Get user roles
+        var roles = await _userManager.GetRolesAsync(user);
 
         var token = _jwtService.GenerateToken(
             userId: user.Id.ToString(),
             username: user.UserName!,
             email: user.Email!,
-            provider: "local"
+            provider: "local",
+            roles: roles.ToList()
         );
 
         return new LoginResponse

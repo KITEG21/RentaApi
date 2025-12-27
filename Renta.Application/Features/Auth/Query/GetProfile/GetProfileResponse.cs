@@ -1,5 +1,3 @@
-using Renta.Domain.Enums;
-
 namespace Renta.Application.Features.Auth.Query.GetProfile;
 
 public record GetProfileResponse
@@ -9,6 +7,5 @@ public record GetProfileResponse
     public string Email { get; init; } = string.Empty;
     public string FirstName { get; init; } = string.Empty;
     public string LastName { get; init; } = string.Empty;
-    public string UserType { get; init; } = string.Empty;
     public IList<string> Roles { get; init; } = new List<string>();
 }

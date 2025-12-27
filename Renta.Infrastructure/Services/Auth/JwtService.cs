@@ -17,35 +17,50 @@ public class JwtService : IJwtService
         _settings = settings.Value;
     }
 
-    public string GenerateToken(string userId, string username, string email, string provider, Guid? canonicalUserId = null)
-{
+    public string GenerateToken(
+        string userId, 
+        string username, 
+        string email, 
+        string provider, 
+        List<string>? roles = null,
+        Guid? canonicalUserId = null)
+    {
         var secret = _settings.Secret ?? string.Empty;
-        Console.WriteLine($"JwtService: Secret Length {secret.Length}, starts with: {secret.Substring(0, Math.Min(10, secret.Length))}");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-    var claims = new List<Claim>
-    {
-        new Claim(JwtRegisteredClaimNames.Sub, userId),
-        new Claim(JwtRegisteredClaimNames.UniqueName, username),
-        new Claim(JwtRegisteredClaimNames.Email, email),
-        new Claim("provider", provider),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, userId),
+            new Claim(JwtRegisteredClaimNames.UniqueName, username),
+            new Claim(JwtRegisteredClaimNames.Email, email),
+            new Claim("provider", provider),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
 
-    if (canonicalUserId.HasValue)
-    {
-        claims.Add(new Claim("canonical_user_id", canonicalUserId.Value.ToString()));
+        // Add role claims
+        if (roles != null && roles.Count > 0)
+        {
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim("role", role));
+            }
+        }
+
+        if (canonicalUserId.HasValue)
+        {
+            claims.Add(new Claim("canonical_user_id", canonicalUserId.Value.ToString()));
+        }
+
+        var token = new JwtSecurityToken(
+            issuer: _settings.Issuer,
+            audience: _settings.Audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(_settings.ExpirationMinutes),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
-    var token = new JwtSecurityToken(
-        issuer: _settings.Issuer,
-        audience: _settings.Audience,
-        claims: claims,
-        expires: DateTime.UtcNow.AddMinutes(_settings.ExpirationMinutes),
-        signingCredentials: credentials
-    );
-
-    return new JwtSecurityTokenHandler().WriteToken(token);
-}
 }

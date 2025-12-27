@@ -1,5 +1,4 @@
 using FastEndpoints;
-using Renta.Domain.Enums;
 
 namespace Renta.Application.Features.Auth.Command.SignUp;
 
@@ -11,5 +10,5 @@ public record SignUpCommand : ICommand<SignUpResponse>
     public string ConfirmPassword { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public UserType UserType { get; set; }
+    public string Role { get; set; } = "Client";
 }

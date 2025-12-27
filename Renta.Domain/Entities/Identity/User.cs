@@ -11,6 +11,5 @@ public class User : IdentityUser<Guid>, IEntity
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public bool IsLock { get; set; } = false;
-    public StatusEntityType StatusBaseEntity { get; set ; }
-    public UserType UserType { get; set; }
+    public StatusEntityType StatusBaseEntity { get; set; }
 }

@@ -43,7 +43,6 @@ public class GetProfileQueryHandler : CoreQueryHandler<GetProfileQuery, GetProfi
             Email = user.Email ?? string.Empty,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            UserType = user.UserType.ToString(),
             Roles = roles.ToList()
         };
     }

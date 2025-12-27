@@ -43,4 +43,10 @@ app.UseFastEndpointsSetup();
 
 app.Services.ApplyMigrationsExtension();
 
+// Seed roles after migrations
+using (var scope = app.Services.CreateScope())
+{
+    await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
+}
+
 app.Run();
