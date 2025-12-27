@@ -1,0 +1,51 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Renta.Application.Settings;
+using Renta.Application.Interfaces;
+
+namespace Renta.Infrastructure.Services.Auth;
+
+public class JwtService : IJwtService
+{
+    private readonly JwtSettings _settings;
+
+    public JwtService(IOptions<JwtSettings> settings)
+    {
+        _settings = settings.Value;
+    }
+
+    public string GenerateToken(string userId, string username, string email, string provider, Guid? canonicalUserId = null)
+{
+        var secret = _settings.Secret ?? string.Empty;
+        Console.WriteLine($"JwtService: Secret Length {secret.Length}, starts with: {secret.Substring(0, Math.Min(10, secret.Length))}");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+    var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, userId),
+        new Claim(JwtRegisteredClaimNames.UniqueName, username),
+        new Claim(JwtRegisteredClaimNames.Email, email),
+        new Claim("provider", provider),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
+
+    if (canonicalUserId.HasValue)
+    {
+        claims.Add(new Claim("canonical_user_id", canonicalUserId.Value.ToString()));
+    }
+
+    var token = new JwtSecurityToken(
+        issuer: _settings.Issuer,
+        audience: _settings.Audience,
+        claims: claims,
+        expires: DateTime.UtcNow.AddMinutes(_settings.ExpirationMinutes),
+        signingCredentials: credentials
+    );
+
+    return new JwtSecurityTokenHandler().WriteToken(token);
+}
+}
