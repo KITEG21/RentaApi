@@ -21,6 +21,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.11.10" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
 
@@ -31,6 +32,8 @@
 
   <ItemGroup>
     <Folder Include="Endpoints\v1\" />
+    <Folder Include="Endpoints\v1\Cars\" />
+    <Folder Include="Endpoints\v1\Yachts\" />
   </ItemGroup>
 
 </Project>

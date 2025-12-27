@@ -16,6 +16,24 @@
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\" />
+    <Folder Include="Features\Cars\" />
+    <Folder Include="Features\Cars\Command\" />
+    <Folder Include="Features\Cars\Command\PatchBaseStatusEntity\" />
+    <Folder Include="Features\Cars\Command\PatchStatus\" />
+    <Folder Include="Features\Cars\Command\Post\" />
+    <Folder Include="Features\Cars\Command\Update\" />
+    <Folder Include="Features\Cars\Query\" />
+    <Folder Include="Features\Cars\Query\GetAll\" />
+    <Folder Include="Features\Cars\Query\GetById\" />
+    <Folder Include="Features\Yacht\" />
+    <Folder Include="Features\Yacht\Command\" />
+    <Folder Include="Features\Yacht\Command\Post\" />
+    <Folder Include="Features\Yacht\Query\" />
+    <Folder Include="Features\Yacht\Query\GetAll\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
