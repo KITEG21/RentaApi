@@ -14,6 +14,12 @@ public class Ticket: Entity
     public TicketStatus Status { get; set; } = TicketStatus.Valid;
     public DateTime PurchaseDate { get; set; }
     
+    public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+    public string? PaymentTransactionId { get; set; }
+    public string? PaymentMethod { get; set; }
+    public DateTime? PaymentDate { get; set; }
+
+
     // Navigation properties
     public Event Event { get; set; } = null!;
     public User Client { get; set; } = null!;

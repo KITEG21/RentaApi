@@ -9,7 +9,7 @@ public class GetTicketByIdEndpoint : CoreEndpoint<GetTicketByIdCommand, GetTicke
 {
     public override void Configure()
     {
-        Get("/ticket/{Id}");
+        Get("/ticket/{id}");
         Roles("Client", "Admin");
         Description(b => b
             .WithTags(RouteGroup.Tickets)

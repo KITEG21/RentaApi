@@ -9,7 +9,7 @@ public class BuyTicketEndpoint : CoreEndpoint<BuyTicketRequest, BuyTicketRespons
 {
     public override void Configure()
     {
-        Post("/event/{EventId}/comprar");
+        Post("/event/{eventId}/get-ticket");
         Roles("Client", "Admin");
         Description(b => b
             .WithTags(RouteGroup.Events)

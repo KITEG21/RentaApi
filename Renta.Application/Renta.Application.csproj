@@ -29,6 +29,7 @@
     <Folder Include="Features\Cars\Query\" />
     <Folder Include="Features\Cars\Query\GetAll\" />
     <Folder Include="Features\Cars\Query\GetById\" />
+    <Folder Include="Features\Tickets\Query\GetTicketQRCode\" />
     <Folder Include="Features\Yacht\" />
     <Folder Include="Features\Yacht\Command\" />
     <Folder Include="Features\Yacht\Command\Post\" />

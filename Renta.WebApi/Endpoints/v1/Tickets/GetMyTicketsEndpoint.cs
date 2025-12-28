@@ -11,7 +11,7 @@ public class GetMyTicketsEndpoint : CoreEndpoint<QueryRequest, PagedResponse<Get
 {
     public override void Configure()
     {
-        Get("/mis-tickets");
+        Get("/my-tickets");
         Roles("Client", "Admin");
         Description(b => b
             .WithTags(RouteGroup.Tickets)

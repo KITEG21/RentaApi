@@ -10,6 +10,7 @@ using Renta.Infrastructure.Services;
 using Renta.Infrastructure.Services.Auth;
 using Microsoft.Extensions.Options;
 using Renta.Infrastructure.Services.Email;
+using Renta.Infrastructure.Services.QRCode;
 
 namespace Renta.WebApi.ServicesExtensions;
 
@@ -26,7 +27,7 @@ public static class DependencyInjectionSetup
         services.AddScoped(typeof(IReadGenericCoreRepository<>), typeof(ReadGenericCoreRepository<>));
         services.AddScoped(typeof(IWriteGenericCoreRepository<>), typeof(WriteGenericCoreRepository<>));
         services.AddScoped<IEmailService, EmailService>();
-        
+        services.AddScoped<IQRCodeService, QRCodeService>();
         
         services.AddHttpClient();
 

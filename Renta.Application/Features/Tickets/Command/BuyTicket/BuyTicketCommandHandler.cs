@@ -3,15 +3,18 @@ using Renta.Application.Interfaces;
 using Renta.Domain.Entities.Events;
 using Renta.Domain.Enums;
 using Renta.Domain.Interfaces.Repositories;
+using Renta.Domain.Interfaces.Services;
 
 namespace Renta.Application.Features.Tickets.Command.BuyTicket;
 
 public class BuyTicketCommandHandler : CoreCommandHandler<BuyTicketCommand, BuyTicketResponse>
 {
+    private readonly IQRCodeService _qrCodeService;
     public BuyTicketCommandHandler(
         IActiveUserSession activeUserSession,
-        IUnitOfWork unitOfWork) : base(activeUserSession, unitOfWork)
+        IUnitOfWork unitOfWork, IQRCodeService qrCodeService) : base(activeUserSession, unitOfWork)
     {
+        _qrCodeService = qrCodeService;
     }
 
     public override async Task<BuyTicketResponse> ExecuteAsync(BuyTicketCommand command, CancellationToken ct = default)
@@ -62,16 +65,16 @@ public class BuyTicketCommandHandler : CoreCommandHandler<BuyTicketCommand, BuyT
             ClientId = clientId.Value,
             TicketType = command.TicketType,
             PricePaid = price,
-            QRCode = GenerateQRCode(),
             Status = TicketStatus.Valid,
             PurchaseDate = DateTime.UtcNow
         };
+        newTicket.QRCode = _qrCodeService.GenerateQRCodeString(newTicket.Id, newTicket.EventId, newTicket.ClientId);
 
         await ticketRepo.SaveAsync(newTicket, false);
 
         // Update available tickets
         eventEntity.AvailableTickets -= 1;
-        await eventRepo.SaveAsync(eventEntity, false);
+        await eventRepo.UpdateAsync(eventEntity, false);
 
         // Commit transaction
         await UnitOfWork.CommitChangesAsync();
@@ -87,11 +90,5 @@ public class BuyTicketCommandHandler : CoreCommandHandler<BuyTicketCommand, BuyT
             Status = newTicket.Status,
             PurchaseDate = newTicket.PurchaseDate
         };
-    }
-
-    private string GenerateQRCode()
-    {
-        // TODO: Generate a unique QR code
-        return Guid.NewGuid().ToString("N").ToUpper();
     }
 }
