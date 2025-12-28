@@ -11,6 +11,7 @@ public class YachtCalendar: Entity
     public DateTime Date { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
-    public CalendarStatus Status { get; set; } = CalendarStatus.Available;
+    public CalendarStatus Status { get; set; } = CalendarStatus.Blocked;
+    public string Reason { get; set; } = string.Empty;
     public Yacht Yacht { get; set; } = null!;
 }

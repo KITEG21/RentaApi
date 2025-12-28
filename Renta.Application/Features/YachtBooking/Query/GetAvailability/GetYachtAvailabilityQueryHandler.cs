@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Renta.Domain.Entities.Bookings;
 using Renta.Domain.Enums;
 using Renta.Domain.Interfaces.Repositories;
+using YachtCalendarEntity = Renta.Domain.Entities.Bookings.YachtCalendar;
 
 namespace Renta.Application.Features.YachtBooking.Query.GetAvailability;
 
@@ -21,11 +22,11 @@ public class GetYachtAvailabilityQueryHandler : CoreQueryHandler<GetYachtAvailab
             ThrowError($"Yacht with ID {query.YachtId} not found.", 404);
         }
 
-        var calendarRepo = UnitOfWork!.ReadDbRepository<YachtCalendar>();
+        var calendarRepo = UnitOfWork!.ReadDbRepository<YachtCalendarEntity>();
         var unavailableSlots = await calendarRepo.GetAll()
             .Where(c => c.YachtId == query.YachtId 
                 && c.Date.Date == query.Date.Date
-                && c.Status != CalendarStatus.Available)
+                && c.Status == CalendarStatus.Blocked)
             .Select(c => new UnavailableTimeSlot
             {
                 StartTime = c.StartTime,

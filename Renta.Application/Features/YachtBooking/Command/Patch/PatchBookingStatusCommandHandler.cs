@@ -34,24 +34,6 @@ public class PatchBookingStatusCommandHandler : CoreCommandHandler<PatchBookingS
         booking.BookingStatus = command.BookingStatus;
         await bookingRepo.UpdateAsync(booking, false);
 
-        // If booking is cancelled, release the calendar slot
-        if (command.BookingStatus == BookingStatus.Cancelled)
-        {
-            var calendarRepo = UnitOfWork!.WriteDbRepository<YachtCalendar>();
-            var calendarEntry = await calendarRepo.GetAll()
-                .FirstOrDefaultAsync(c => c.YachtId == booking.YachtId 
-                    && c.Date == booking.Date
-                    && c.StartTime == TimeOnly.FromTimeSpan(booking.StartTime)
-                    && c.EndTime == TimeOnly.FromTimeSpan(booking.EndTime)
-                    && c.Status == CalendarStatus.Reserved, ct);
-
-            if (calendarEntry != null)
-            {
-                // Change status back to Available or delete the entry
-                await calendarRepo.DeleteAsync(calendarEntry, false);
-            }
-        }
-
         await UnitOfWork!.SaveChangesAsync();
 
         return new PatchBookingStatusResponse

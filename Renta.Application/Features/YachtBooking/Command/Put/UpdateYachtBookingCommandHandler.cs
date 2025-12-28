@@ -3,6 +3,7 @@ using Renta.Application.Interfaces;
 using Renta.Domain.Entities.Bookings;
 using Renta.Domain.Enums;
 using Renta.Domain.Interfaces.Repositories;
+using YachtCalendarEntity = Renta.Domain.Entities.Bookings.YachtCalendar;
 
 namespace Renta.Application.Features.YachtBooking.Command.Put;
 
@@ -44,16 +45,15 @@ public class UpdateYachtBookingCommandHandler : CoreCommandHandler<UpdateYachtBo
 
         if (timeChanged)
         {
-            // Check calendar availability for new time slot
-            var calendarReadRepo = UnitOfWork!.ReadDbRepository<YachtCalendar>();
+            // Check calendar for blocked time slots
+            var calendarReadRepo = UnitOfWork!.ReadDbRepository<YachtCalendarEntity>();
             var hasConflict = await calendarReadRepo.GetAll()
                 .Where(c => c.YachtId == booking.YachtId 
                     && c.Date.Date == command.Date.Date
-                    && c.Status != CalendarStatus.Available)
+                    && c.Status == CalendarStatus.Blocked)
                 .AnyAsync(c => 
-                    // Check for time overlap, excluding the current booking's calendar entry
-                    (TimeOnly.FromTimeSpan(command.StartTime) < c.EndTime && TimeOnly.FromTimeSpan(command.EndTime) > c.StartTime)
-                    && !(c.Date == booking.Date && c.StartTime == TimeOnly.FromTimeSpan(booking.StartTime) && c.EndTime == TimeOnly.FromTimeSpan(booking.EndTime)),
+                    // Check for time overlap
+                    TimeOnly.FromTimeSpan(command.StartTime) < c.EndTime && TimeOnly.FromTimeSpan(command.EndTime) > c.StartTime,
                     ct);
 
             if (hasConflict)
@@ -76,32 +76,6 @@ public class UpdateYachtBookingCommandHandler : CoreCommandHandler<UpdateYachtBo
             {
                 ThrowError("There is already a booking for this yacht at the selected time.", 409);
             }
-
-            // Update calendar entry
-            var calendarWriteRepo = UnitOfWork!.WriteDbRepository<YachtCalendar>();
-            var oldCalendarEntry = await calendarWriteRepo.GetAll()
-                .FirstOrDefaultAsync(c => c.YachtId == booking.YachtId 
-                    && c.Date == booking.Date
-                    && c.StartTime == TimeOnly.FromTimeSpan(booking.StartTime)
-                    && c.EndTime == TimeOnly.FromTimeSpan(booking.EndTime), ct);
-
-            if (oldCalendarEntry != null)
-            {
-                // Delete old calendar entry
-                await calendarWriteRepo.DeleteAsync(oldCalendarEntry, false);
-            }
-
-            // Create new calendar entry
-            var newCalendarEntry = new YachtCalendar
-            {
-                YachtId = booking.YachtId,
-                Date = command.Date,
-                StartTime = TimeOnly.FromTimeSpan(command.StartTime),
-                EndTime = TimeOnly.FromTimeSpan(command.EndTime),
-                Status = CalendarStatus.Reserved
-            };
-
-            await calendarWriteRepo.SaveAsync(newCalendarEntry, false);
         }
 
         // Update booking
@@ -113,7 +87,7 @@ public class UpdateYachtBookingCommandHandler : CoreCommandHandler<UpdateYachtBo
 
         await bookingRepo.UpdateAsync(booking, false);
 
-        // Save all changes in one transaction
+        // Save all changes
         await UnitOfWork!.SaveChangesAsync();
 
         return new UpdateYachtBookingResponse

@@ -31,12 +31,6 @@ public class CancelYachtBookingCommandHandler : CoreCommandHandler<CancelYachtBo
             ThrowError($"Booking with ID {command.Id} not found.", 404);
         }
 
-        // Only allow client to cancel their own bookings (unless admin)
-        if (booking.ClientId != clientId.Value && !UserRoles.Contains("Admin"))
-        {
-            ThrowError("You don't have permission to cancel this booking.", 403);
-        }
-
         // Don't allow cancelling completed bookings
         if (booking.BookingStatus == BookingStatus.Completed)
         {
@@ -51,20 +45,6 @@ public class CancelYachtBookingCommandHandler : CoreCommandHandler<CancelYachtBo
         // Update booking status
         booking.BookingStatus = BookingStatus.Cancelled;
         await bookingRepo.UpdateAsync(booking, false);
-
-        // Release calendar slot
-        var calendarRepo = UnitOfWork!.WriteDbRepository<YachtCalendar>();
-        var calendarEntry = await calendarRepo.GetAll()
-            .FirstOrDefaultAsync(c => c.YachtId == booking.YachtId 
-                && c.Date == booking.Date
-                && c.StartTime == TimeOnly.FromTimeSpan(booking.StartTime)
-                && c.EndTime == TimeOnly.FromTimeSpan(booking.EndTime)
-                && c.Status == CalendarStatus.Reserved, ct);
-
-        if (calendarEntry != null)
-        {
-            await calendarRepo.DeleteAsync(calendarEntry, false);
-        }
 
         await UnitOfWork!.SaveChangesAsync();
 

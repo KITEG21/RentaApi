@@ -3,6 +3,7 @@ using Renta.Application.Interfaces;
 using Renta.Domain.Entities.Bookings;
 using Renta.Domain.Enums;
 using Renta.Domain.Interfaces.Repositories;
+using YachtCalendarEntity = Renta.Domain.Entities.Bookings.YachtCalendar;
 
 namespace Renta.Application.Features.YachtBooking.Command.Post;
 
@@ -18,11 +19,6 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
     {
         var clientId = CurrentUserId;
         
-        if (clientId is null || clientId == Guid.Empty)
-        {
-            ThrowError("User not authenticated", 401);
-        }
-
         var yachtRepo = UnitOfWork!.ReadDbRepository<Domain.Entities.Vehicles.Yacht>();
         var yacht = yachtRepo.GetById(command.YachtId);
         
@@ -31,12 +27,12 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
             ThrowError($"Yacht with ID {command.YachtId} not found.", 404);
         }
 
-        // Check yacht calendar availability
-        var calendarRepo = UnitOfWork!.ReadDbRepository<YachtCalendar>();
+        // Check yacht calendar for blocked time slots
+        var calendarRepo = UnitOfWork!.ReadDbRepository<YachtCalendarEntity>();
         var hasConflict = await calendarRepo.GetAll()
             .Where(c => c.YachtId == command.YachtId 
                 && c.Date.Date == command.Date.Date
-                && c.Status != CalendarStatus.Available)
+                && c.Status == CalendarStatus.Blocked)
             .AnyAsync(c => 
                 // Check for time overlap
                 TimeOnly.FromTimeSpan(command.StartTime) < c.EndTime && TimeOnly.FromTimeSpan(command.EndTime) > c.StartTime,
@@ -55,7 +51,7 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
                 && (b.BookingStatus == BookingStatus.Pending || b.BookingStatus == BookingStatus.Confirmed))
             .AnyAsync(b => 
                 // Check for time overlap
-                (command.StartTime < b.EndTime && command.EndTime > b.StartTime),
+                command.StartTime < b.EndTime && command.EndTime > b.StartTime,
                 ct);
 
         if (existingBooking)
@@ -64,7 +60,6 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
         }
 
         var bookingWriteRepo = UnitOfWork!.WriteDbRepository<Domain.Entities.Bookings.YachtBooking>();
-        var calendarWriteRepo = UnitOfWork!.WriteDbRepository<YachtCalendar>();
 
         // Create booking
         var booking = new Domain.Entities.Bookings.YachtBooking
@@ -82,19 +77,7 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
 
         await bookingWriteRepo.SaveAsync(booking, false);
 
-        // Reserve the time slot in calendar
-        var calendarEntry = new YachtCalendar
-        {
-            YachtId = command.YachtId,
-            Date = command.Date,
-            StartTime = TimeOnly.FromTimeSpan(command.StartTime),
-            EndTime = TimeOnly.FromTimeSpan(command.EndTime),
-            Status = CalendarStatus.Reserved
-        };
-
-        await calendarWriteRepo.SaveAsync(calendarEntry, false);
-
-        // Save all changes in one transaction
+        // Save all changes
         await UnitOfWork.SaveChangesAsync();
 
         return new CreateYachtBookingResponse
