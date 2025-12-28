@@ -22,11 +22,11 @@ public class GetYachtAvailabilityQueryHandler : CoreQueryHandler<GetYachtAvailab
             ThrowError($"Yacht with ID {query.YachtId} not found.", 404);
         }
 
+        // Query only YachtCalendar - it has ALL unavailability (blocks AND reservations)
         var calendarRepo = UnitOfWork!.ReadDbRepository<YachtCalendarEntity>();
         var unavailableSlots = await calendarRepo.GetAll()
             .Where(c => c.YachtId == query.YachtId 
-                && c.Date.Date == query.Date.Date
-                && c.Status == CalendarStatus.Blocked)
+                && c.Date.Date == query.Date.Date)
             .Select(c => new UnavailableTimeSlot
             {
                 StartTime = c.StartTime,

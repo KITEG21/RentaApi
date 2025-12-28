@@ -13,5 +13,10 @@ public class YachtCalendar: Entity
     public TimeOnly EndTime { get; set; }
     public CalendarStatus Status { get; set; } = CalendarStatus.Blocked;
     public string Reason { get; set; } = string.Empty;
+    
+    // Link to booking if this calendar entry is a reservation
+    public Guid? BookingId { get; set; }
+    public YachtBooking? Booking { get; set; }
+    
     public Yacht Yacht { get; set; } = null!;
 }

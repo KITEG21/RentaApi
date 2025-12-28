@@ -19,6 +19,11 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
     {
         var clientId = CurrentUserId;
         
+        if (clientId is null || clientId == Guid.Empty)
+        {
+            ThrowError("User not authenticated", 401);
+        }
+        
         var yachtRepo = UnitOfWork!.ReadDbRepository<Domain.Entities.Vehicles.Yacht>();
         var yacht = yachtRepo.GetById(command.YachtId);
         
@@ -27,12 +32,11 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
             ThrowError($"Yacht with ID {command.YachtId} not found.", 404);
         }
 
-        // Check yacht calendar for blocked time slots
+        // Check yacht calendar for ANY unavailability (blocks OR reservations)
         var calendarRepo = UnitOfWork!.ReadDbRepository<YachtCalendarEntity>();
         var hasConflict = await calendarRepo.GetAll()
             .Where(c => c.YachtId == command.YachtId 
-                && c.Date.Date == command.Date.Date
-                && c.Status == CalendarStatus.Blocked)
+                && c.Date.Date == command.Date.Date)
             .AnyAsync(c => 
                 // Check for time overlap
                 TimeOnly.FromTimeSpan(command.StartTime) < c.EndTime && TimeOnly.FromTimeSpan(command.EndTime) > c.StartTime,
@@ -43,23 +47,8 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
             ThrowError("The yacht is not available for the selected date and time.", 409);
         }
 
-        // Check for existing bookings with same time slot
-        var bookingReadRepo = UnitOfWork!.ReadDbRepository<Domain.Entities.Bookings.YachtBooking>();
-        var existingBooking = await bookingReadRepo.GetAll()
-            .Where(b => b.YachtId == command.YachtId 
-                && b.Date.Date == command.Date.Date
-                && (b.BookingStatus == BookingStatus.Pending || b.BookingStatus == BookingStatus.Confirmed))
-            .AnyAsync(b => 
-                // Check for time overlap
-                command.StartTime < b.EndTime && command.EndTime > b.StartTime,
-                ct);
-
-        if (existingBooking)
-        {
-            ThrowError("There is already a booking for this yacht at the selected time.", 409);
-        }
-
         var bookingWriteRepo = UnitOfWork!.WriteDbRepository<Domain.Entities.Bookings.YachtBooking>();
+        var calendarWriteRepo = UnitOfWork!.WriteDbRepository<YachtCalendarEntity>();
 
         // Create booking
         var booking = new Domain.Entities.Bookings.YachtBooking
@@ -77,7 +66,21 @@ public class CreateYachtBookingCommandHandler : CoreCommandHandler<CreateYachtBo
 
         await bookingWriteRepo.SaveAsync(booking, false);
 
-        // Save all changes
+        // Create corresponding calendar entry with Reserved status
+        var calendarEntry = new YachtCalendarEntity
+        {
+            YachtId = command.YachtId,
+            Date = command.Date,
+            StartTime = TimeOnly.FromTimeSpan(command.StartTime),
+            EndTime = TimeOnly.FromTimeSpan(command.EndTime),
+            Status = CalendarStatus.Reserved,
+            Reason = "Client Booking",
+            BookingId = booking.Id
+        };
+
+        await calendarWriteRepo.SaveAsync(calendarEntry, false);
+
+        // Save all changes in one transaction
         await UnitOfWork.SaveChangesAsync();
 
         return new CreateYachtBookingResponse

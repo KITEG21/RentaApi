@@ -3,6 +3,7 @@ using Renta.Application.Interfaces;
 using Renta.Domain.Entities.Bookings;
 using Renta.Domain.Enums;
 using Renta.Domain.Interfaces.Repositories;
+using YachtCalendarEntity = Renta.Domain.Entities.Bookings.YachtCalendar;
 
 namespace Renta.Application.Features.YachtBooking.Command.Delete;
 
@@ -45,6 +46,17 @@ public class CancelYachtBookingCommandHandler : CoreCommandHandler<CancelYachtBo
         // Update booking status
         booking.BookingStatus = BookingStatus.Cancelled;
         await bookingRepo.UpdateAsync(booking, false);
+
+        // Delete the corresponding calendar entry
+        var calendarReadRepo = UnitOfWork!.ReadDbRepository<YachtCalendarEntity>();
+        var calendarEntry = await calendarReadRepo.GetAll()
+            .FirstOrDefaultAsync(c => c.BookingId == booking.Id, ct);
+
+        if (calendarEntry != null)
+        {
+            var calendarWriteRepo = UnitOfWork!.WriteDbRepository<YachtCalendarEntity>();
+            calendarWriteRepo.Delete(calendarEntry);
+        }
 
         await UnitOfWork!.SaveChangesAsync();
 

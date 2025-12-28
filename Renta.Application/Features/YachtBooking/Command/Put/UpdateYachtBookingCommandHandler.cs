@@ -45,12 +45,12 @@ public class UpdateYachtBookingCommandHandler : CoreCommandHandler<UpdateYachtBo
 
         if (timeChanged)
         {
-            // Check calendar for blocked time slots
+            // Check calendar for conflicts (excluding current booking's calendar entry)
             var calendarReadRepo = UnitOfWork!.ReadDbRepository<YachtCalendarEntity>();
             var hasConflict = await calendarReadRepo.GetAll()
                 .Where(c => c.YachtId == booking.YachtId 
                     && c.Date.Date == command.Date.Date
-                    && c.Status == CalendarStatus.Blocked)
+                    && c.BookingId != command.Id) // Exclude current booking's calendar entry
                 .AnyAsync(c => 
                     // Check for time overlap
                     TimeOnly.FromTimeSpan(command.StartTime) < c.EndTime && TimeOnly.FromTimeSpan(command.EndTime) > c.StartTime,
@@ -61,20 +61,18 @@ public class UpdateYachtBookingCommandHandler : CoreCommandHandler<UpdateYachtBo
                 ThrowError("The yacht is not available for the selected date and time.", 409);
             }
 
-            // Check for existing bookings
-            var bookingReadRepo = UnitOfWork!.ReadDbRepository<Domain.Entities.Bookings.YachtBooking>();
-            var existingBooking = await bookingReadRepo.GetAll()
-                .Where(b => b.YachtId == booking.YachtId 
-                    && b.Id != command.Id
-                    && b.Date.Date == command.Date.Date
-                    && (b.BookingStatus == BookingStatus.Pending || b.BookingStatus == BookingStatus.Confirmed))
-                .AnyAsync(b => 
-                    command.StartTime < b.EndTime && command.EndTime > b.StartTime,
-                    ct);
+            // Update the calendar entry linked to this booking
+            var calendarWriteRepo = UnitOfWork!.WriteDbRepository<YachtCalendarEntity>();
+            var calendarEntry = await calendarWriteRepo.GetAll()
+                .FirstOrDefaultAsync(c => c.BookingId == booking.Id, ct);
 
-            if (existingBooking)
+            if (calendarEntry != null)
             {
-                ThrowError("There is already a booking for this yacht at the selected time.", 409);
+                // Update existing calendar entry
+                calendarEntry.Date = command.Date;
+                calendarEntry.StartTime = TimeOnly.FromTimeSpan(command.StartTime);
+                calendarEntry.EndTime = TimeOnly.FromTimeSpan(command.EndTime);
+                await calendarWriteRepo.UpdateAsync(calendarEntry, false);
             }
         }
 
