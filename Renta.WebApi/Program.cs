@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Renta.Infrastructure.Persistence.Context;
 using Renta.WebApi;
+using Renta.WebApi.Authorization;
 using Renta.WebApi.ServicesExtensions;
 using Scalar.AspNetCore;
 
@@ -14,7 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
   .AddIdentitySetup()
   .AddJwtAuthenticationSetup(builder.Configuration)
-  .AddAuthorization();
+  .AddAuthorization()
+  .AddCustomPolicies();
 
 builder.Services
   .AddEndpointsApiExplorer()
@@ -27,19 +29,17 @@ builder.Services
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseFastEndpointsSetup();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.UseScalarSetup();
+}
 
 app.Services.ApplyMigrationsExtension();
 

@@ -8,7 +8,7 @@ public class GetYachtBookingByIdEndpoint : CoreEndpoint<GetYachtBookingByIdComma
 {
     public override void Configure()
     {
-        Get("/yacht-booking/{Id}");
+        Get("/yacht-booking/{id}");
         Roles("Client", "Admin", "Dealer");
         Description(b => b
             .WithTags(RouteGroup.YachtBookings)

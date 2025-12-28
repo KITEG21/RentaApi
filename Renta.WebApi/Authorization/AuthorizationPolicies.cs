@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Renta.WebApi.Authorization;
@@ -15,38 +16,38 @@ public static class AuthorizationPolicies
     public const string ClientOrAdmin = "ClientOrAdmin";
     public const string AnyRole = "AnyRole";
 
-    public static void AddCustomPolicies(this IServiceCollection services)
+        public static void AddCustomPolicies(this IServiceCollection services)
     {
         services.AddAuthorizationBuilder()
             .AddPolicy(AdminOnly, policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("role", "Admin");
+                policy.RequireClaim(ClaimTypes.Role, "Admin"); // Use ClaimTypes.Role
             })
             .AddPolicy(DealerOnly, policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("role", "Dealer");
+                policy.RequireClaim(ClaimTypes.Role, "Dealer"); // Use ClaimTypes.Role
             })
             .AddPolicy(ClientOnly, policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("role", "Client");
+                policy.RequireClaim(ClaimTypes.Role, "Client"); // Use ClaimTypes.Role
             })
             .AddPolicy(DealerOrAdmin, policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("role", "Dealer", "Admin");
+                policy.RequireClaim(ClaimTypes.Role, "Dealer", "Admin"); // Use ClaimTypes.Role
             })
             .AddPolicy(ClientOrAdmin, policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("role", "Client", "Admin");
+                policy.RequireClaim(ClaimTypes.Role, "Client", "Admin"); // Use ClaimTypes.Role
             })
             .AddPolicy(AnyRole, policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("role", "Admin", "Dealer", "Client");
+                policy.RequireClaim(ClaimTypes.Role, "Admin", "Dealer", "Client"); // Use ClaimTypes.Role
             });
     }
 }

@@ -38,12 +38,12 @@ public class JwtService : IJwtService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        // Add role claims
+        
         if (roles != null && roles.Count > 0)
         {
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, role)); 
                 claims.Add(new Claim("role", role));
             }
         }
@@ -61,6 +61,10 @@ public class JwtService : IJwtService
             signingCredentials: credentials
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        // Create handler without claim type mapping
+        var tokenHandler = new JwtSecurityTokenHandler();
+        tokenHandler.OutboundClaimTypeMap.Clear();
+        
+        return tokenHandler.WriteToken(token);
     }
 }

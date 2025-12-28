@@ -15,6 +15,15 @@ public static class OpenApiSetup
                 document.Info.Version = "v1";
                 document.Info.Description = "API for Renta application with JWT authentication";
 
+                // Remove request body from GET operations
+                foreach (var path in document.Paths.Values)
+                {
+                    if (path.Operations.TryGetValue(OperationType.Get, out var getOperation))
+                    {
+                        getOperation.RequestBody = null;
+                    }
+                }
+
                 // Add JWT Bearer security scheme
                 document.Components ??= new OpenApiComponents();
                 document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme

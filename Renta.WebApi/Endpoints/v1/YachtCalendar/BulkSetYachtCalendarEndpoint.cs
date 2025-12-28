@@ -10,7 +10,7 @@ public class BulkSetYachtCalendarEndpoint : CoreEndpoint<BulkSetYachtCalendarCom
     public override void Configure()
     {
         Post("/yacht-calendar/bulk");
-        Policies(AuthorizationPolicies.DealerOrAdmin);
+        Policies(AuthorizationPolicies.AdminOnly);
         Description(b => b
             .WithTags(RouteGroup.YachtCalendar)
             .WithSummary("Bulk set yacht calendar availability")

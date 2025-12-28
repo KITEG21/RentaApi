@@ -23,8 +23,6 @@ public class ForgotPasswordCommandHandler : CoreCommandHandler<ForgotPasswordCom
 
     public override async Task<ForgotPasswordResponse> ExecuteAsync(ForgotPasswordCommand command, CancellationToken ct = default)
     {
-
-
         var user = await _userManager.FindByEmailAsync(command.Email);
 
         if (user == null)
@@ -36,7 +34,7 @@ public class ForgotPasswordCommandHandler : CoreCommandHandler<ForgotPasswordCom
         }
 
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        
+
         try
         {
             await _emailService.SendPasswordResetEmailAsync(user.Email!, resetToken, user.UserName!);

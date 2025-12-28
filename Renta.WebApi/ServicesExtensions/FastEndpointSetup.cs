@@ -17,6 +17,8 @@ public static class FastEndpointSetup
     {
         app.UseFastEndpoints(c =>
         {
+            c.Security.RoleClaimType = System.Security.Claims.ClaimTypes.Role;
+            
             // c.Errors.UseProblemDetails();
             c.Errors.ResponseBuilder = (failures, ctx, statusCode) =>
             {

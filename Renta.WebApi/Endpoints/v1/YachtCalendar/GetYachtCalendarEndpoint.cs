@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Renta.Application.Features.YachtCalendar.Query.GetCalendar;
+using Renta.WebApi.Binders;
 using Renta.WebApi.Helpers;
 
 namespace Renta.WebApi.Endpoints.v1.YachtCalendar;
@@ -8,7 +9,7 @@ public class GetYachtCalendarEndpoint : CoreEndpoint<GetYachtCalendarQuery, GetY
 {
     public override void Configure()
     {
-        Get("/yacht-calendar/{YachtId}/{StartDate}/{EndDate}");
+        Get("/yacht-calendar/{yachtId}/{startDate}/{endDate}");
         AllowAnonymous();
         Description(b => b
             .WithTags(RouteGroup.YachtCalendar)

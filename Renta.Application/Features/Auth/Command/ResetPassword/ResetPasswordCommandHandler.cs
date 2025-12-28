@@ -21,15 +21,6 @@ public class ResetPasswordCommandHandler : CoreCommandHandler<ResetPasswordComma
     {
         var email = CurrentUserEmail ?? command.Email;
 
-        if (string.IsNullOrWhiteSpace(email))
-            ThrowError("Email is required", 400);
-
-        // if (string.IsNullOrWhiteSpace(command.Token))
-        //     ThrowError("Reset token is required", 400);
-
-        if (string.IsNullOrWhiteSpace(command.NewPassword))
-            ThrowError("New password is required", 400);
-
         if (command.NewPassword != command.ConfirmPassword)
             ThrowError("Passwords do not match", 400);
 
@@ -53,4 +44,4 @@ public class ResetPasswordCommandHandler : CoreCommandHandler<ResetPasswordComma
             Message = "Password has been reset successfully. You can now login with your new password."
         };
     }
-}
+}        

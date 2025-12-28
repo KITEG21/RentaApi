@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -40,10 +41,8 @@ public static class JwtAuthenticationSetup
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ClockSkew = TimeSpan.Zero, // Remove default 5 minute tolerance
                 
-                // IMPORTANT: Prevent claim type mapping
-                // This keeps claim names as-is instead of converting to Microsoft claim types
-                NameClaimType = "unique_name",
-                RoleClaimType = "role"
+                NameClaimType = ClaimTypes.Name,
+                RoleClaimType = ClaimTypes.Role
             };
 
             // Optional: Add event handlers for debugging
@@ -75,7 +74,21 @@ public static class JwtAuthenticationSetup
                 {
                     Console.WriteLine("Token validated successfully!");
                     Console.WriteLine($"User Identity: {context.Principal?.Identity?.Name}");
+                    Console.WriteLine($"User IsAuthenticated: {context.Principal?.Identity?.IsAuthenticated}");
                     Console.WriteLine($"Claims: {string.Join(", ", context.Principal?.Claims.Select(c => $"{c.Type}={c.Value}") ?? Array.Empty<string>())}");
+                    
+                    // Check specific role claim
+                    var roleClaims = context.Principal?.Claims.Where(c => c.Type == "role" || c.Type.EndsWith("/role")).ToList();
+                    Console.WriteLine($"Role claims found: {string.Join(", ", roleClaims?.Select(c => $"{c.Type}={c.Value}") ?? Array.Empty<string>())}");
+                    
+                    return Task.CompletedTask;
+                },
+                OnForbidden = context =>
+                {
+                    Console.WriteLine($"OnForbidden triggered!");
+                    Console.WriteLine($"User: {context.Principal?.Identity?.Name}");
+                    Console.WriteLine($"IsAuthenticated: {context.Principal?.Identity?.IsAuthenticated}");
+                    Console.WriteLine($"All Claims: {string.Join(", ", context.Principal?.Claims.Select(c => $"{c.Type}={c.Value}") ?? Array.Empty<string>())}");
                     return Task.CompletedTask;
                 },
                 OnMessageReceived = context =>

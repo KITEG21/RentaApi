@@ -9,7 +9,7 @@ public class GetCarByIdEndpoint : CoreEndpoint<GetCarByIdCommand, GetCarByIdResp
 {
     public override void Configure()
     {
-        Get("/car/{Id}");
+        Get("/car/{id}");
         AllowAnonymous();
         Description(b => b
             .WithTags(RouteGroup.Cars)
