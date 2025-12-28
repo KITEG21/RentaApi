@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Endpoints\v1\" />
     <Folder Include="Endpoints\v1\Cars\" />
     <Folder Include="Endpoints\v1\Yachts\" />
   </ItemGroup>

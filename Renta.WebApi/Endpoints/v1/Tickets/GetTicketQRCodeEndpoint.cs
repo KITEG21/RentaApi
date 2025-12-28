@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Renta.Application.Features.Tickets.Query.GetTicketQRCode;
+using Renta.WebApi.Helpers;
 
 namespace Renta.WebApi.Endpoints.v1.Tickets;
 
@@ -7,8 +8,9 @@ public class GetTicketQRCodeEndpoint : Endpoint<GetTicketQRCodeQuery, byte[]>
 {
     public override void Configure()
     {
-        Get("/ticket/{TicketId}/qr");
+        Get("/ticket/{ticketId}/qr");
         Roles("Client", "Admin");
+        Tags(RouteGroup.Tickets); 
         Summary(s =>
         {
             s.Summary = "Get ticket QR code image";

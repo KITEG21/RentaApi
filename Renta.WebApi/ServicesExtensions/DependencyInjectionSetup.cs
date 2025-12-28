@@ -11,6 +11,7 @@ using Renta.Infrastructure.Services.Auth;
 using Microsoft.Extensions.Options;
 using Renta.Infrastructure.Services.Email;
 using Renta.Infrastructure.Services.QRCode;
+using Renta.Infrastructure.Services.Payment;
 
 namespace Renta.WebApi.ServicesExtensions;
 
@@ -28,6 +29,7 @@ public static class DependencyInjectionSetup
         services.AddScoped(typeof(IWriteGenericCoreRepository<>), typeof(WriteGenericCoreRepository<>));
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IQRCodeService, QRCodeService>();
+        services.AddScoped<IPaymentService, StripePaymentService>();
         
         services.AddHttpClient();
 
@@ -37,6 +39,7 @@ public static class DependencyInjectionSetup
         services.Configure<ThrottleSettings>(configuration.GetSection("Throttle"));
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+        services.Configure<StripeSettings>(configuration.GetSection("StripeSettings")); 
 
         return services;
     }
