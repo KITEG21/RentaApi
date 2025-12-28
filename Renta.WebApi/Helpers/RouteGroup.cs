@@ -9,6 +9,7 @@ public static class RouteGroup
     public static readonly string Cars = "Cars";
     public static readonly string Yachts = "Yachts";
     public static readonly string Events = "Events";
+    public static readonly string Tickets = "Tickets";
     public static readonly string Auth = "Auth";
     public static readonly string YachtBookings = "Yacht Bookings";
     public static readonly string YachtCalendar = "Yacht Calendar";

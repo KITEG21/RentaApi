@@ -2,6 +2,6 @@ namespace Renta.Domain.Enums;
 
 public enum CalendarStatus
 {
-    Blocked,
-    Reserved
+    Blocked = 1,
+    Reserved = 2
 }
