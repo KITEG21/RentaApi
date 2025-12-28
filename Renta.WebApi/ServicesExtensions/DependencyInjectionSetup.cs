@@ -9,6 +9,7 @@ using Renta.Infrastructure.Persistence.Repositories;
 using Renta.Infrastructure.Services;
 using Renta.Infrastructure.Services.Auth;
 using Microsoft.Extensions.Options;
+using Renta.Infrastructure.Services.Email;
 
 namespace Renta.WebApi.ServicesExtensions;
 
@@ -24,7 +25,7 @@ public static class DependencyInjectionSetup
         services.AddScoped<IDateTimeService, DateTimeService>();
         services.AddScoped(typeof(IReadGenericCoreRepository<>), typeof(ReadGenericCoreRepository<>));
         services.AddScoped(typeof(IWriteGenericCoreRepository<>), typeof(WriteGenericCoreRepository<>));
-        // Configure named HttpClients with pre-configured settings
+        services.AddScoped<IEmailService, EmailService>();
         
         
         services.AddHttpClient();
@@ -34,6 +35,8 @@ public static class DependencyInjectionSetup
 
         services.Configure<ThrottleSettings>(configuration.GetSection("Throttle"));
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+
         return services;
     }
 }

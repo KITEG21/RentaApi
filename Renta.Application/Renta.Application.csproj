@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <Folder Include="Features\" />
+    <Folder Include="Features\Auth\Command\ForgotPassword\" />
+    <Folder Include="Features\Auth\Command\ResetPassword\" />
     <Folder Include="Features\Cars\" />
     <Folder Include="Features\Cars\Command\" />
     <Folder Include="Features\Cars\Command\PatchBaseStatusEntity\" />
