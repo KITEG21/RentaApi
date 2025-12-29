@@ -35,18 +35,17 @@ app.UseAuthorization();
 
 app.UseFastEndpointsSetup();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseScalarSetup();
-}
+
+app.MapOpenApi();
+app.UseScalarSetup();
+
 
 app.Services.ApplyMigrationsExtension();
 
 // Seed roles after migrations
 using (var scope = app.Services.CreateScope())
 {
-    await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
+  await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
 }
 
 app.Run();
