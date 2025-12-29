@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Renta.Infrastructure.Persistence.Context;
@@ -11,9 +12,11 @@ using Renta.Infrastructure.Persistence.Context;
 namespace Renta.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationWriteDbContext))]
-    partial class ApplicationWriteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251229042016_AddProperPhotoRelationships")]
+    partial class AddProperPhotoRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
