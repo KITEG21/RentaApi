@@ -10,11 +10,6 @@ public class UploadFileCommandValidator : AbstractValidator<UploadFileCommand>
             .NotNull()
             .WithMessage("File is required");
 
-        RuleFor(x => x.Folder)
-            .NotEmpty()
-            .WithMessage("Folder is required")
-            .MaximumLength(100);
-
         RuleFor(x => x)
             .Must(x => (x.CarId.HasValue && x.CarId.Value != Guid.Empty) ||
                        (x.YachtId.HasValue && x.YachtId.Value != Guid.Empty) ||

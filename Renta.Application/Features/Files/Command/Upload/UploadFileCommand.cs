@@ -8,7 +8,6 @@ public record UploadFileCommand : ICommand<UploadFileResponse>
 {
     public IFormFile File { get; set; } = null!;
     public string Folder { get; set; } = "general";
-    
     // Photo entity fields
     public Guid? CarId { get; set; }
     public Guid? YachtId { get; set; }
