@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renta.Domain", "Renta.Domain\Renta.Domain.csproj", "{FA949A0D-EC19-4D88-B5A0-0FAA96669E64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renta.Application", "Renta.Application\Renta.Application.csproj", "{3EB14071-1E31-4C14-A5E6-F6B0A4258726}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renta.Infrastructure", "Renta.Infrastructure\Renta.Infrastructure.csproj", "{0BED5E08-C293-4483-9D52-90A3C118E805}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renta.WebApi", "Renta.WebApi\Renta.WebApi.csproj", "{D72996D9-564A-401F-84E8-34CB77808C88}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA949A0D-EC19-4D88-B5A0-0FAA96669E64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA949A0D-EC19-4D88-B5A0-0FAA96669E64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA949A0D-EC19-4D88-B5A0-0FAA96669E64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA949A0D-EC19-4D88-B5A0-0FAA96669E64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EB14071-1E31-4C14-A5E6-F6B0A4258726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EB14071-1E31-4C14-A5E6-F6B0A4258726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EB14071-1E31-4C14-A5E6-F6B0A4258726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EB14071-1E31-4C14-A5E6-F6B0A4258726}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BED5E08-C293-4483-9D52-90A3C118E805}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BED5E08-C293-4483-9D52-90A3C118E805}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BED5E08-C293-4483-9D52-90A3C118E805}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BED5E08-C293-4483-9D52-90A3C118E805}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D72996D9-564A-401F-84E8-34CB77808C88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D72996D9-564A-401F-84E8-34CB77808C88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D72996D9-564A-401F-84E8-34CB77808C88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D72996D9-564A-401F-84E8-34CB77808C88}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
