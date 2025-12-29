@@ -1,87 +1,107 @@
-# Renta Project Documentation
+# Renta - Premium Rental & Event Management API
 
-## Overview
-
-Renta is a modular .NET 9.0 application for managing rentals, ticket sales, payments, and file uploads. It uses FastEndpoints for API structure, Entity Framework Core with PostgreSQL for data, and integrates with Stripe for payments and Cloudinary for file storage.
-
----
-
-## Architecture
-
-- **CQRS Pattern:** Commands and queries are separated for clean, maintainable code.
-- **Repository Pattern:** Abstracts data access for testability and flexibility.
-- **Dependency Injection:** All services and repositories are injected for loose coupling.
-- **Entity Framework Core:** Used for ORM and migrations.
-- **FastEndpoints:** Minimal API endpoints with strong typing and validation.
+## 🚀 What the Project Does
+Renta is a high-performance, modular .NET 9.0 Web API designed to handle the complex logistics of luxury rentals (Cars, Yachts) and Event ticketing. It provides a robust backend for:
+- **Inventory Management:** Multi-entity support for Cars, Yachts, and Events with rich multimedia (Cloudinary integration).
+- **Secure Ticketing:** QR-code-based ticket generation and validation with automated email delivery.
+- **Integrated Payments:** Full Stripe integration for secure transactions and automated order processing via webhooks.
+- **Clean Architecture:** Built using CQRS, Repository Pattern, and FastEndpoints for maximum scalability and maintainability.
 
 ---
 
-## Key Features
+## 🛠️ Getting Started (Local Setup)
 
-### 1. Ticketing & Events
-- List, buy, and manage tickets for events.
-- QR code generation for ticket validation.
-- Email notifications on ticket purchase.
+### Prerequisites
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [PostgreSQL](https://www.postgresql.org/download/)
+- [Stripe CLI](https://stripe.com/docs/stripe-cli) (for webhook testing)
 
-### 2. Payments
-- Stripe integration for payment processing.
-- Webhook endpoint for payment status updates.
-- Idempotency and metadata validation for safe payment handling.
+### Step-by-Step Execution
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/renta.git
+   cd renta
+   ```
 
-### 3. File Uploads
-- Upload images to Cloudinary for Cars, Yachts, and Events.
-- Each entity has a one-to-many relationship with Photos.
-- File size and type validation.
+2. **Configure Environment Variables:**
+   Update `appsettings.json` in `Renta.WebApi` or set environment variables (see section below).
 
-### 4. Database Design
-- PostgreSQL with proper foreign key relationships.
-- Photo entity links to Car, Yacht, or Event via nullable FKs.
-- Cascade delete for related photos.
+3. **Apply Database Migrations:**
+   ```bash
+   dotnet ef database update --project Renta.Infrastructure --startup-project Renta.WebApi
+   ```
 
----
-
-## Main Entities
-
-- **Car, Yacht, Event:** Each has a `Photos` collection.
-- **Photo:** Has nullable `CarId`, `YachtId`, `EventId` FKs and navigation properties.
-- **Ticket:** Linked to Event and User.
-- **User:** Identity and role management.
+4. **Run the Application:**
+   ```bash
+   dotnet run --project Renta.WebApi
+   ```
 
 ---
 
-## Example: File Upload Flow
+## 🧪 Testing the API
 
-1. **Endpoint:** `POST /file/upload`
-2. **Command:** `UploadFileCommand` with one of `CarId`, `YachtId`, or `EventId`.
-3. **Handler:** Validates input, uploads to Cloudinary, creates a Photo, and links it to the correct entity.
-4. **Database:** Only the relevant FK is set; others are null.
+### Swagger UI
+Once the app is running, you can explore and test all endpoints via the interactive Swagger documentation:- **URL:** `http://localhost:5037/scalar` 
 
----
+### Example Request: Uploading a Car Photo
+**Endpoint:** `POST /api/file/upload`  
+**Content-Type:** `multipart/form-data`
 
-## Running Migrations
+**Request Body:**
+- `File`: [Your Image File]
+- `CarId`: [Some car Id]
+- `Type`: `Gallery`
 
-```bash
-dotnet ef database update --project Renta.Infrastructure --startup-project Renta.WebApi
+**Response (200 OK):**
+```json
+{
+  "photoId": "019b60c1-d33d-8bb7-b72f-6e50bf1c0547",
+  "url": "http://res.cloudinary.com/dnta7zbad/image/upload/v1/car/...",
+  "secureUrl": "https://res.cloudinary.com/dnta7zbad/image/upload/v1/car/...",
+  "format": "jpg",
+  "size": 54210
+}
 ```
 
 ---
 
-## Stripe Webhook
+## 💳 Stripe Sandbox Testing
 
-- **Endpoint:** `/api/stripe/webhook`
-- **Validates** Stripe signature and processes payment events.
+To test the payment flow without real money:
+
+1. **Use Test Cards:** Use Stripe's [test card numbers](https://stripe.com/docs/testing#cards) (e.g., `4242 4242 4242 4242`).
+2. **Test Webhooks Locally:**
+   - Install Stripe CLI and login: `stripe login`
+   - Forward webhooks to your local instance:
+     ```bash
+     stripe listen --forward-to http://localhost:5037/api/stripe/webhook
+     ```
+   - Copy the `whsec_...` signing secret provided by the CLI into your `StripeSettings__WebhookSecret`.
+3. **Trigger Events:** You can trigger a successful payment via the CLI:
+   ```bash
+   stripe trigger payment_intent.succeeded
+   ```
 
 ---
 
-## Cloudinary Integration
+## 🔑 Required Environment Variables
 
-- **Settings:** Configured in `appsettings.json` and registered in DI.
-- **Service:** `IFileService` abstraction for uploads.
+For production or local overrides, ensure the following variables are set:
+
+| Category | Variable Name | Description |
+| :--- | :--- | :--- |
+| **Database** | `ConnectionStrings__WriteDefaultConnection` | PostgreSQL connection string |
+| **Auth** | `JwtSettings__Secret` | 32+ character secret key |
+| **Stripe** | `StripeSettings__SecretKey` | Your `sk_test_...` key |
+| **Stripe** | `StripeSettings__WebhookSecret` | Webhook signing secret |
+| **Cloudinary** | `CloudinarySettings__CloudName` | Cloudinary Cloud Name |
+| **Cloudinary** | `CloudinarySettings__ApiKey` | Cloudinary API Key |
+| **Cloudinary** | `CloudinarySettings__ApiSecret` | Cloudinary API Secret |
+| **Email** | `EmailSettings__Password` | App password for SMTP |
 
 ---
 
-## Error Handling
-
-- All endpoints return clear error messages and HTTP status codes.
-
----
+## 🏗️ Architecture Details
+- **CQRS:** Commands (Write) and Queries (Read) are separated to optimize performance.
+- **Validation:** FluentValidation is used to ensure data integrity before processing.
+- **Security:** Role-based authorization (Admin/Client) and JWT-based authentication.
