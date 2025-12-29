@@ -8,6 +8,7 @@ public class HelloEndpoint : CoreEndpointWithoutRequest<string>
     {
         Get("/hello");
         AllowAnonymous();
+        Description(b => b.WithTags("Hello"));
     }
 
     public override async Task HandleAsync(CancellationToken ct)

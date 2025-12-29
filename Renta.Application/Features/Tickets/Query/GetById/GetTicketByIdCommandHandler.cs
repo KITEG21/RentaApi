@@ -15,7 +15,7 @@ public class GetTicketByIdCommandHandler : CoreQueryHandler<GetTicketByIdCommand
         var ticketRepo = UnitOfWork!.ReadDbRepository<Domain.Entities.Events.Ticket>();
         
         var ticket = await ticketRepo
-            .GetAll(includes: new Expression<Func<Domain.Entities.Events.Ticket, object>>[] { t => t.Event, t => t.Client })
+            .GetAll()
             .Where(t => t.Id == command.Id)
             .Select(t => new GetTicketByIdResponse
             {
@@ -37,7 +37,7 @@ public class GetTicketByIdCommandHandler : CoreQueryHandler<GetTicketByIdCommand
 
         if (ticket == null)
         {
-            throw new Exception("Ticket not found");
+            ThrowError("Ticket not found", 404);
         }
 
         return ticket;

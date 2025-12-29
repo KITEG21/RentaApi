@@ -49,15 +49,15 @@ public class YachtConfiguration : IEntityTypeConfiguration<Yacht>
             .OnDelete(DeleteBehavior.Restrict);
         
         // Navigation properties
-        builder.HasMany(y => y.Photos)
-            .WithOne()
-            .HasForeignKey(p => p.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder.HasMany(y => y.Photos)
+        //     .WithOne()
+        //     .HasForeignKey(p => p.EntityId)
+        //     .OnDelete(DeleteBehavior.Cascade);
         
-        builder.HasMany(y => y.Videos)
-            .WithOne()
-            .HasForeignKey(v => v.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder.HasMany(y => y.Videos)
+        //     .WithOne()
+        //     .HasForeignKey(v => v.EntityId)
+        //     .OnDelete(DeleteBehavior.Cascade);
         
         // Indexes
         builder.HasIndex(y => y.OwnerId);

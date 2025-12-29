@@ -5,6 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.27.9" />
     <PackageReference Include="FastEndpoints" Version="7.0.1" />
     <PackageReference Include="FastEndpoints.Generator" Version="7.0.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\" />
     <Folder Include="Features\Auth\Command\ForgotPassword\" />
     <Folder Include="Features\Auth\Command\ResetPassword\" />
     <Folder Include="Features\Cars\" />
@@ -30,6 +30,7 @@
     <Folder Include="Features\Cars\Query\" />
     <Folder Include="Features\Cars\Query\GetAll\" />
     <Folder Include="Features\Cars\Query\GetById\" />
+    <Folder Include="Features\Files\Command\Upload\" />
     <Folder Include="Features\Tickets\Command\CreatePaymentIntent\" />
     <Folder Include="Features\Tickets\Command\ProcessStripePayment\" />
     <Folder Include="Features\Tickets\Query\GetTicketQRCode\" />

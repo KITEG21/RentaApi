@@ -61,15 +61,15 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .HasForeignKey(t => t.EventId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasMany(e => e.Photos)
-            .WithOne()
-            .HasForeignKey(p => p.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder.HasMany(e => e.Photos)
+        //     .WithOne()
+        //     .HasForeignKey(p => p.EntityId)
+        //     .OnDelete(DeleteBehavior.Cascade);
         
-        builder.HasMany(e => e.Videos)
-            .WithOne()
-            .HasForeignKey(v => v.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder.HasMany(e => e.Videos)
+        //     .WithOne()
+        //     .HasForeignKey(v => v.EntityId)
+        //     .OnDelete(DeleteBehavior.Cascade);
         
         // Indexes
         builder.HasIndex(e => e.EventDate);

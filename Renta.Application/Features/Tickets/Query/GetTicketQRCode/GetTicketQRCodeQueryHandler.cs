@@ -28,13 +28,13 @@ public class GetTicketQRCodeQueryHandler : CoreQueryHandler<GetTicketQRCodeQuery
             
         if (ticket == null)
         {
-            throw new Exception("Ticket not found");
+            ThrowError("Ticket not found", 404);
         }
         
         // Verify ownership (unless admin)
         if (!UserRoles.Contains("Admin") && ticket.ClientId != CurrentUserId)
         {
-            throw new UnauthorizedAccessException("You don't have access to this ticket");
+            ThrowError("You don't have access to this ticket", 403);
         }
         
         return _qrCodeService.GenerateQRCodeImage(ticket.QRCode);

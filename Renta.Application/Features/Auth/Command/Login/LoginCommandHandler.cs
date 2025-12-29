@@ -25,7 +25,7 @@ public class LoginCommandHandler : CoreCommandHandler<LoginCommand, LoginRespons
     public override async Task<LoginResponse> ExecuteAsync(LoginCommand command, CancellationToken ct = default)
     {
         if (string.IsNullOrEmpty(command.Username) || string.IsNullOrEmpty(command.Password))
-            throw new UnauthorizedAccessException("Invalid credentials");
+            ThrowError("Invalid credentials", 401);
 
         // Find user by username or email
         var user = await _userManager.FindByNameAsync(command.Username)

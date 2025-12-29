@@ -20,13 +20,36 @@ public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
             .IsRequired();
         
         builder.Property(p => p.Type)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion<int>();
         
-        builder.Property(p => p.EntityId)
-            .IsRequired();
+        // Foreign keys
+        builder.Property(p => p.CarId);
+        builder.Property(p => p.YachtId);
+        builder.Property(p => p.EventId);
+        
+        // Relationships
+        builder.HasOne(p => p.Car)
+            .WithMany(c => c.Photos)
+            .HasForeignKey(p => p.CarId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(p => p.Yacht)
+            .WithMany(y => y.Photos)
+            .HasForeignKey(p => p.YachtId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(p => p.Event)
+            .WithMany(e => e.Photos)
+            .HasForeignKey(p => p.EventId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         // Indexes
-        builder.HasIndex(p => p.EntityId);
-        builder.HasIndex(p => new { p.EntityId, p.VisualizationOrder });
+        builder.HasIndex(p => p.CarId);
+        builder.HasIndex(p => p.YachtId);
+        builder.HasIndex(p => p.EventId);
+        builder.HasIndex(p => new { p.CarId, p.VisualizationOrder });
+        builder.HasIndex(p => new { p.YachtId, p.VisualizationOrder });
+        builder.HasIndex(p => new { p.EventId, p.VisualizationOrder });
     }
 }

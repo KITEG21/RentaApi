@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Renta.Application.Features.Tickets.Command.CreatePaymentIntent;
+using Renta.WebApi.Helpers;
 
 namespace Renta.WebApi.Endpoints.v1.Tickets;
 
@@ -9,11 +10,11 @@ public class CreatePaymentIntentEndpoint : CoreEndpoint<CreatePaymentIntentComma
     {
         Post("/ticket/payment-intent");
         Roles("Client", "Admin");
-        Summary(s =>
-        {
-            s.Summary = "Create Stripe payment intent";
-            s.Description = "Creates a payment intent for ticket purchase.";
-        });
+        Description(b => b
+        .WithTags(RouteGroup.Tickets)
+        .WithSummary("Create Stripe payment intent")
+        .WithDescription("Creates a payment intent for ticket purchase.")
+        );
         base.Configure();
     }
 

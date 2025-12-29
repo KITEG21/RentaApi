@@ -22,7 +22,7 @@ public class BuyTicketCommandHandler : CoreCommandHandler<BuyTicketCommand, BuyT
         var clientId = CurrentUserId;
         if (!clientId.HasValue)
         {
-            throw new UnauthorizedAccessException("User not authenticated");
+            ThrowError("User not authenticated", 401);
         }
 
         // Get the event
@@ -33,19 +33,19 @@ public class BuyTicketCommandHandler : CoreCommandHandler<BuyTicketCommand, BuyT
 
         if (eventEntity == null)
         {
-            throw new Exception("Event not found");
+            ThrowError("Event not found", 404);
         }
 
         // Check if event is active
         if (eventEntity.Status != EventStatus.Active)
         {
-            throw new Exception("Event is not available for ticket purchase");
+            ThrowError("Event is not available for ticket purchase", 400);
         }
 
         // Check if tickets are available
         if (eventEntity.AvailableTickets <= 0)
         {
-            throw new Exception("No tickets available for this event");
+            ThrowError("No tickets available for this event", 400);
         }
 
         // Determine price based on ticket type

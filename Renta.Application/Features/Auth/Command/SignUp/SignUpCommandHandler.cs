@@ -32,20 +32,20 @@ public class SignUpCommandHandler : CoreCommandHandler<SignUpCommand, SignUpResp
         var existingUser = await _userManager.FindByEmailAsync(command.Email);
         if (existingUser != null)
         {
-            throw new InvalidOperationException("A user with this email already exists");
+            ThrowError("A user with this email already exists");
         }
 
         existingUser = await _userManager.FindByNameAsync(command.Username);
         if (existingUser != null)
         {
-            throw new InvalidOperationException("A user with this username already exists");
+            ThrowError("A user with this username already exists");
         }
 
         // Validate role exists
         var roleExists = await _roleManager.RoleExistsAsync(command.Role);
         if (!roleExists)
         {
-            throw new InvalidOperationException($"Role '{command.Role}' does not exist");
+            ThrowError($"Role '{command.Role}' does not exist");
         }
 
         // Create new user
@@ -65,7 +65,7 @@ public class SignUpCommandHandler : CoreCommandHandler<SignUpCommand, SignUpResp
         if (!result.Succeeded)
         {
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            throw new InvalidOperationException($"Failed to create user: {errors}");
+            ThrowError($"Failed to create user: {errors}");
         }
 
         // Assign role to user
@@ -74,7 +74,7 @@ public class SignUpCommandHandler : CoreCommandHandler<SignUpCommand, SignUpResp
         {
             await _userManager.DeleteAsync(user);
             var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
-            throw new InvalidOperationException($"Failed to assign role: {errors}");
+            ThrowError($"Failed to assign role: {errors}");
         }
 
         // Get roles for JWT

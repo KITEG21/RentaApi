@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Renta.Application.Features.Tickets.Command.ProcessStripePayment;
 using Renta.Domain.Enums;
 using Renta.Domain.Settings;
+using Renta.WebApi.Helpers;
 using Stripe;
 using StripeEvents = Stripe.Events;
 
@@ -29,12 +30,17 @@ public class StripeWebhookEndpoint : EndpointWithoutRequest
     {
         Post("/webhooks/stripe");
         AllowAnonymous();
-        //Options(x => x.RequireCors(cors => cors.AllowAnyOrigin()));
+        Description(s =>
+        {
+            s.WithTags(RouteGroup.Webhooks);
+            s.WithSummary("Stripe Webhook Endpoint");
+            s.WithDescription("Endpoint to receive and process Stripe webhook events.");
+        });
+        Options(x => x.RequireCors(cors => cors.AllowAnyOrigin()));
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        // Read raw body for signature verification
         HttpContext.Request.EnableBuffering();
         string json;
         

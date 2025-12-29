@@ -29,7 +29,7 @@ public class CreatePaymentIntentCommandHandler : CoreCommandHandler<CreatePaymen
         var clientId = CurrentUserId;
         if (!clientId.HasValue)
         {
-            throw new UnauthorizedAccessException("User not authenticated");
+            ThrowError("User not authenticated", 401);
         }
 
         var eventRepo = UnitOfWork!.ReadDbRepository<Domain.Entities.Events.Event>();
@@ -46,7 +46,7 @@ public class CreatePaymentIntentCommandHandler : CoreCommandHandler<CreatePaymen
             TicketType.General => eventEntity.GeneralTicketPrice,
             TicketType.VIP => eventEntity.VIPTicketPrice,
             TicketType.Backstage => eventEntity.BackstageTicketPrice,
-            _ => throw new NotImplementedException(),
+            _ => throw new ArgumentException("Invalid ticket type")
         };
 
         // Create Stripe PaymentIntent

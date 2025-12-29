@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 using Renta.Infrastructure.Services.Email;
 using Renta.Infrastructure.Services.QRCode;
 using Renta.Infrastructure.Services.Payment;
+using Renta.Infrastructure.Services.Files;
+using CloudinaryDotNet;
 
 namespace Renta.WebApi.ServicesExtensions;
 
@@ -30,7 +32,20 @@ public static class DependencyInjectionSetup
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IQRCodeService, QRCodeService>();
         services.AddScoped<IPaymentService, StripePaymentService>();
-        
+        services.AddScoped<IFileService, CloudinaryFileService>();
+
+        services.AddSingleton(sp =>
+        {
+            var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+            var account = new Account(
+                config.CloudName,
+                config.ApiKey,
+                config.ApiSecret
+            );
+            return new Cloudinary(account);
+        });
+
+
         services.AddHttpClient();
 
         // JWT Service
@@ -39,7 +54,8 @@ public static class DependencyInjectionSetup
         services.Configure<ThrottleSettings>(configuration.GetSection("Throttle"));
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
-        services.Configure<StripeSettings>(configuration.GetSection("StripeSettings")); 
+        services.Configure<StripeSettings>(configuration.GetSection("StripeSettings"));
+        services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
 
         return services;
     }

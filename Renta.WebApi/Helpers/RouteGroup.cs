@@ -13,5 +13,7 @@ public static class RouteGroup
     public static readonly string Auth = "Auth";
     public static readonly string YachtBookings = "Yacht Bookings";
     public static readonly string YachtCalendar = "Yacht Calendar";
+    public static readonly string Webhooks = "Webhooks";
+    public static readonly string Files = "Files";
 }
 

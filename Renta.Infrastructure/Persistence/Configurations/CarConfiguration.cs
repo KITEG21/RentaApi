@@ -55,15 +55,15 @@ public class CarConfiguration : IEntityTypeConfiguration<Car>
             .OnDelete(DeleteBehavior.Restrict);
         
         // Navigation properties
-        builder.HasMany(c => c.Photos)
-            .WithOne()
-            .HasForeignKey(p => p.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder.HasMany(c => c.Photos)
+        //     .WithOne()
+        //     .HasForeignKey(p => p.EntityId)
+        //     .OnDelete(DeleteBehavior.Cascade);
         
-        builder.HasMany(c => c.Videos)
-            .WithOne()
-            .HasForeignKey(v => v.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder.HasMany(c => c.Videos)
+        //     .WithOne()
+        //     .HasForeignKey(v => v.EntityId)
+        //     .OnDelete(DeleteBehavior.Cascade);
         
         // Indexes
         builder.HasIndex(c => c.DealerId);

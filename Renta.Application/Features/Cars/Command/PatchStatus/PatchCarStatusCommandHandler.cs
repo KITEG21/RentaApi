@@ -16,7 +16,7 @@ public class PatchCarStatusCommandHandler : CoreCommandHandler<PatchCarStatusCom
         var car = await carRepo.GetByIdAsync(command.Id);
 
         if (car == null)
-            throw new Exception($"Car with ID {command.Id} not found.");
+            ThrowError($"Car with ID {command.Id} not found.", 404);
 
         car.Status = command.Status;
 

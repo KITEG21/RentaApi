@@ -22,7 +22,7 @@ public class GetMyTicketsCommandHandler : CoreQueryHandler<GetMyTicketsCommand, 
         var clientId = CurrentUserId;
         if (!clientId.HasValue)
         {
-            throw new UnauthorizedAccessException("User not authenticated");
+            ThrowError("User not authenticated", 401);
         }
 
         // Filter by current user's tickets

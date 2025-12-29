@@ -10,12 +10,11 @@ public class GetTicketQRCodeEndpoint : Endpoint<GetTicketQRCodeQuery, byte[]>
     {
         Get("/ticket/{ticketId}/qr");
         Roles("Client", "Admin");
-        Tags(RouteGroup.Tickets); 
-        Summary(s =>
-        {
-            s.Summary = "Get ticket QR code image";
-            s.Description = "Returns a PNG image of the ticket's QR code";
-        });
+        Description(b => b
+        .WithTags(RouteGroup.Tickets)
+        .WithSummary("Get ticket QR code image")
+        .WithDescription("Returns a PNG image of the ticket's QR code")
+        );
     }
 
     public override async Task HandleAsync(GetTicketQRCodeQuery req, CancellationToken ct)
