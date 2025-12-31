@@ -2,13 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using Renta.Application.Common.Response;
 using Renta.Application.Extensions;
 using Renta.Domain.Interfaces.Repositories;
+using Serilog;
 
 namespace Renta.Application.Features.Tickets.Query.GetAll;
 
 public class GetAllTicketsCommandHandler : CoreQueryHandler<GetAllTicketsCommand, PagedResponse<GetAllTicketsResponse>>
 {
+    private readonly ILogger _logger;
+
     public GetAllTicketsCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _logger = Log.ForContext<GetAllTicketsCommandHandler>();
     }
 
     public override async Task<PagedResponse<GetAllTicketsResponse>> ExecuteAsync(GetAllTicketsCommand command, CancellationToken ct = default)

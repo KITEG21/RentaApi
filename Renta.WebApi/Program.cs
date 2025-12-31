@@ -1,10 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.EntityFrameworkCore;
-using Renta.Infrastructure.Persistence.Context;
 using Renta.WebApi;
 using Renta.WebApi.Authorization;
 using Renta.WebApi.ServicesExtensions;
-using Scalar.AspNetCore;
+using Serilog;
+using Serilog.Events;
+using Serilog.Extensions.Logging;
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
@@ -17,6 +17,17 @@ builder.Services
   .AddJwtAuthenticationSetup(builder.Configuration)
   .AddAuthorization()
   .AddCustomPolicies();
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("System", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.ApplicationInsights(
+        builder.Configuration["ApplicationInsights:ConnectionString"],
+        TelemetryConverter.Traces)
+    .CreateLogger();
 
 builder.Services
   .AddEndpointsApiExplorer()

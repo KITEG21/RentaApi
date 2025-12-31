@@ -1,19 +1,25 @@
 using Microsoft.EntityFrameworkCore;
 using Renta.Application.Interfaces;
 using Renta.Domain.Interfaces.Repositories;
+using Serilog;
 
 namespace Renta.Application.Features.YachtBooking.Query.GetById;
 
 public class GetYachtBookingByIdCommandHandler : CoreQueryHandler<GetYachtBookingByIdCommand, GetYachtBookingByIdResponse>
 {
+    private readonly ILogger _logger;
+
     public GetYachtBookingByIdCommandHandler(
         IActiveUserSession activeUserSession,
         IUnitOfWork unitOfWork) : base(activeUserSession, unitOfWork)
     {
+        _logger = Log.ForContext<GetYachtBookingByIdCommandHandler>();
     }
 
     public override async Task<GetYachtBookingByIdResponse> ExecuteAsync(GetYachtBookingByIdCommand command, CancellationToken ct = default)
     {
+        _logger.Information("Retrieving yacht booking by ID: {BookingId} for user: {UserId}", command.Id, CurrentUserId);
+
         var bookingRepo = UnitOfWork!.ReadDbRepository<Domain.Entities.Bookings.YachtBooking>();
         var booking = await bookingRepo
             .GetAll()
@@ -23,6 +29,7 @@ public class GetYachtBookingByIdCommandHandler : CoreQueryHandler<GetYachtBookin
 
         if (booking is null)
         {
+            _logger.Warning("Booking not found: {BookingId}", command.Id);
             ThrowError($"Booking with ID {command.Id} not found.", 404);
         }
 
@@ -32,9 +39,12 @@ public class GetYachtBookingByIdCommandHandler : CoreQueryHandler<GetYachtBookin
             var clientId = CurrentUserId;
             if (booking.ClientId != clientId)
             {
+                _logger.Warning("Access denied: User {UserId} attempted to access booking {BookingId} owned by {OwnerId}", CurrentUserId, command.Id, booking.ClientId);
                 ThrowError("You don't have permission to view this booking.", 403);
             }
         }
+
+        _logger.Information("Successfully retrieved booking: {BookingId}", command.Id);
 
         return new GetYachtBookingByIdResponse
         {
