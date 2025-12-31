@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.ApplicationInsights.Extensibility;
 using Renta.WebApi;
 using Renta.WebApi.Authorization;
 using Renta.WebApi.ServicesExtensions;
@@ -10,6 +11,7 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
@@ -18,17 +20,21 @@ builder.Services
   .AddAuthorization()
   .AddCustomPolicies();
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-    .MinimumLevel.Override("System", LogEventLevel.Warning)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.ApplicationInsights(
-        builder.Configuration["ApplicationInsights:ConnectionString"],
-        TelemetryConverter.Traces)
-    .CreateLogger();
+  builder.Services.AddApplicationInsightsTelemetry();
 
+builder.Host.UseSerilog((context, services, loggerConfig) =>
+{
+    loggerConfig
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .WriteTo.ApplicationInsights(
+            telemetryConfiguration: services.GetRequiredService<TelemetryConfiguration>(),
+            telemetryConverter: TelemetryConverter.Traces
+        );
+});
 builder.Services
   .AddEndpointsApiExplorer()
   .AddDependencyInjectionSetup(builder.Configuration)
@@ -45,11 +51,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseFastEndpointsSetup();
-
-
 app.MapOpenApi();
 app.UseScalarSetup();
 
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate =
+        "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+});
 
 app.Services.ApplyMigrationsExtension();
 

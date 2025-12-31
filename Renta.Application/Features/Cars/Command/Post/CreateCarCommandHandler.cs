@@ -1,4 +1,5 @@
 using System;
+using Renta.Application.Interfaces;
 using Renta.Domain.Entities.Vehicles;
 using Renta.Domain.Interfaces.Repositories;
 
@@ -6,11 +7,12 @@ namespace Renta.Application.Features.Cars.Command.Post;
 
 public class CreateCarCommandHandler : CoreCommandHandler<CreateCarCommand, CreateCarResponse>
 {
-    public CreateCarCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
+    public CreateCarCommandHandler(IUnitOfWork unitOfWork, IActiveUserSession activeUserSession) : base(activeUserSession, unitOfWork)
     {
     }
     public override async Task<CreateCarResponse> ExecuteAsync(CreateCarCommand command, CancellationToken ct = default)
     {
+        var userId = CurrentUserId;
         var carRepo = UnitOfWork!.WriteDbRepository<Car>();
 
         var car = new Car
@@ -24,7 +26,7 @@ public class CreateCarCommandHandler : CoreCommandHandler<CreateCarCommand, Crea
             Description = command.Description,
             MechanicalDetails = command.MechanicalDetails,
             PaymentConditions = command.PaymentConditions,
-            DealerId = Guid.Parse("6390a56a-f646-44d0-87d4-efa0199e5ef7") // ToDo: Set DealerId when authentication is implemented
+            DealerId = userId!.Value
             
         };
 

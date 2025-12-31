@@ -1,4 +1,5 @@
 using System;
+using Renta.Application.Interfaces;
 using Renta.Domain.Entities.Vehicles;
 using Renta.Domain.Interfaces.Repositories;
 
@@ -6,13 +7,14 @@ namespace Renta.Application.Features.Yachts.Command.Post;
 
 public class CreateYachtCommandHandler : CoreCommandHandler<CreateYachtCommand, CreateYachtResponse>
 {
-    public CreateYachtCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
+    public CreateYachtCommandHandler(IUnitOfWork unitOfWork, IActiveUserSession activeUserSession) : base(activeUserSession, unitOfWork)
     {
     }
     
     public override async Task<CreateYachtResponse> ExecuteAsync(CreateYachtCommand command, CancellationToken ct = default)
     {
         var yachtRepo = UnitOfWork!.WriteDbRepository<Domain.Entities.Vehicles.Yacht>();
+        var userId = CurrentUserId;
 
         var yacht = new Domain.Entities.Vehicles.Yacht
         {
@@ -24,7 +26,7 @@ public class CreateYachtCommandHandler : CoreCommandHandler<CreateYachtCommand, 
             PricePerHour = command.PricePerHour,
             PricePerDay = command.PricePerDay,
             AvailableRoutes = command.AvailableRoutes,
-            OwnerId = Guid.Parse("6390a56a-f646-44d0-87d4-efa0199e5ef7") // ToDo: Set OwnerId when authentication is implemented
+            OwnerId = userId!.Value
         };
 
         await yachtRepo.SaveAsync(yacht, true);
